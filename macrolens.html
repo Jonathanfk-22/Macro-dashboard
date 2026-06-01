@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MacroLens — Global Macro Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Mono:wght@400;500&family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0a0b;--bg2:#111113;--bg3:#18181c;--bg4:#1f1f25;
+  --border:#2a2a32;--border2:#38383f;
+  --text:#e8e8ec;--text2:#9494a0;--text3:#5a5a65;
+  --amber:#f5a623;--teal:#2dd4bf;--red:#f87171;--green:#4ade80;--blue:#60a5fa;
+  --font-serif:'DM Serif Display',Georgia,serif;
+  --font-mono:'IBM Plex Mono',monospace;
+  --font-sans:'Figtree',sans-serif;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-sans);font-size:15px;line-height:1.6;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+button{cursor:pointer;font-family:var(--font-sans)}
+
+/* Ticker */
+.ticker-wrap{background:var(--bg2);border-bottom:1px solid var(--border);height:34px;overflow:hidden}
+.ticker-track{display:flex;white-space:nowrap;animation:ticker 50s linear infinite}
+.ticker-track:hover{animation-play-state:paused}
+.ticker-item{display:inline-flex;align-items:center;gap:8px;padding:0 24px;height:34px;font-family:var(--font-mono);font-size:11px;border-right:1px solid var(--border)}
+.ticker-name{color:var(--text3)}
+.ticker-val{color:var(--text);font-weight:500}
+.up{color:var(--green)}.dn{color:var(--red)}.neu{color:var(--text2)}
+@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* Nav */
+nav{position:sticky;top:0;z-index:100;background:rgba(10,10,11,0.93);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 2.5rem;height:56px}
+.nav-logo{font-family:var(--font-serif);font-size:21px;letter-spacing:-0.02em;color:var(--amber);display:flex;flex-direction:column;line-height:1}
+.nav-logo span{color:var(--text3);font-family:var(--font-mono);font-size:9px;letter-spacing:0.12em;margin-top:1px}
+.nav-right{display:flex;align-items:center;gap:12px}
+.nav-link{font-size:13px;color:var(--text2);transition:color 0.15s}
+.nav-link:hover{color:var(--text)}
+.nav-cta{background:var(--amber);color:#000;font-size:12px;font-weight:600;padding:7px 16px;border-radius:4px;border:none;letter-spacing:0.02em;transition:background 0.15s}
+.nav-cta:hover{background:#e09620}
+
+/* Hero */
+.hero{min-height:86vh;display:flex;flex-direction:column;justify-content:center;padding:5rem 2.5rem 3rem;position:relative;overflow:hidden}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:56px 56px;opacity:0.3;pointer-events:none}
+.hero-glow{position:absolute;top:-5%;left:28%;width:700px;height:600px;background:radial-gradient(ellipse,rgba(245,166,35,0.07) 0%,transparent 65%);pointer-events:none}
+.hero-inner{max-width:1100px;margin:0 auto;width:100%;position:relative}
+.hero-eye{font-family:var(--font-mono);font-size:11px;letter-spacing:0.13em;color:var(--amber);text-transform:uppercase;margin-bottom:1.5rem;display:flex;align-items:center;gap:10px}
+.hero-eye::before{content:'';display:block;width:24px;height:1px;background:var(--amber)}
+.hero h1{font-family:var(--font-serif);font-size:clamp(2.6rem,5.5vw,5rem);line-height:1.08;letter-spacing:-0.02em;margin-bottom:1.25rem;max-width:800px}
+.hero h1 em{color:var(--amber);font-style:italic}
+.hero-sub{font-size:16px;color:var(--text2);max-width:500px;line-height:1.75;margin-bottom:2.5rem;font-weight:300}
+.hero-actions{display:flex;gap:10px;flex-wrap:wrap}
+.btn-primary{background:var(--amber);color:#000;padding:12px 26px;border-radius:4px;border:none;font-size:14px;font-weight:600;letter-spacing:0.02em;transition:all 0.15s}
+.btn-primary:hover{background:#e09620;transform:translateY(-1px)}
+.btn-ghost{background:transparent;color:var(--text);padding:12px 26px;border-radius:4px;border:1px solid var(--border2);font-size:14px;transition:all 0.15s}
+.btn-ghost:hover{border-color:var(--text2)}
+.hero-kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:6px;margin-top:3.5rem;overflow:hidden}
+.hero-kpi{background:var(--bg2);padding:1.1rem 1.25rem}
+.hkpi-val{font-family:var(--font-mono);font-size:22px;font-weight:500;color:var(--text)}
+.hkpi-val.loading{color:var(--text3);font-size:13px;font-weight:400}
+.hkpi-label{font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);margin-top:3px}
+.hkpi-sub{font-family:var(--font-mono);font-size:11px;color:var(--text2);margin-top:3px}
+
+/* Section */
+.section{padding:3.5rem 2.5rem;max-width:1200px;margin:0 auto;width:100%}
+hr.div{border:none;border-top:1px solid var(--border)}
+
+/* Country selector */
+.selector-wrap{display:flex;align-items:center;gap:1rem;margin-bottom:2rem;flex-wrap:wrap}
+.selector-label{font-family:var(--font-mono);font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3)}
+.country-search-wrap{position:relative;flex:1;max-width:380px}
+.country-search-wrap input{width:100%;background:var(--bg2);border:1px solid var(--border2);border-radius:5px;color:var(--text);font-family:var(--font-sans);font-size:15px;padding:10px 14px 10px 40px;outline:none;transition:border-color 0.15s}
+.country-search-wrap input:focus{border-color:var(--amber)}
+.search-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:15px;pointer-events:none}
+.country-dropdown{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--bg3);border:1px solid var(--border2);border-radius:5px;z-index:200;overflow:hidden;box-shadow:0 8px 32px rgba(0,0,0,0.5);display:none;max-height:300px;overflow-y:auto}
+.country-dropdown.open{display:block}
+.dd-item{display:flex;align-items:center;gap:10px;padding:10px 14px;cursor:pointer;transition:background 0.1s;font-size:14px}
+.dd-item:hover,.dd-item.highlighted{background:var(--bg4)}
+.dd-flag{font-size:18px;line-height:1}
+.dd-name{color:var(--text)}
+.dd-sub{font-size:11px;color:var(--text3);font-family:var(--font-mono);margin-left:auto}
+.dd-empty{padding:12px 14px;font-size:13px;color:var(--text3);font-family:var(--font-mono)}
+.selected-country-tag{display:flex;align-items:center;gap:8px;background:var(--bg3);border:1px solid var(--border2);border-radius:5px;padding:8px 14px;font-size:14px;color:var(--text)}
+.selected-country-tag .flag{font-size:18px}
+.selected-country-tag .clear{margin-left:auto;color:var(--text3);font-size:18px;cursor:pointer;line-height:1;transition:color 0.15s}
+.selected-country-tag .clear:hover{color:var(--text)}
+
+/* Source bar */
+.source-bar{background:var(--bg2);border:1px solid var(--border);border-radius:5px;padding:0.6rem 1rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:1.5rem}
+.source-bar p{font-size:11px;color:var(--text3);font-family:var(--font-mono)}
+.source-bar p b{color:var(--text2);font-weight:400}
+.live-dot{display:inline-block;width:6px;height:6px;background:var(--green);border-radius:50%;margin-right:5px;animation:blink 2s ease-in-out infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+
+/* Metrics */
+.metrics-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(155px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:1.5rem}
+.metric-card{background:var(--bg2);padding:1rem 1.2rem}
+.metric-label{font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);margin-bottom:6px}
+.metric-val{font-family:var(--font-mono);font-size:22px;font-weight:500;color:var(--text);line-height:1}
+.metric-val.loading{font-size:13px;color:var(--text3);font-weight:400}
+.metric-delta{font-family:var(--font-mono);font-size:11px;margin-top:5px;color:var(--text2)}
+
+/* Cards grid */
+.cards-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:1.5rem}
+.card{background:var(--bg2);padding:1.25rem 1.4rem}
+.card-head{font-size:10px;text-transform:uppercase;letter-spacing:0.1em;color:var(--text3);margin-bottom:1rem;display:flex;align-items:center;gap:7px}
+.card-head::before{content:'';display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--amber)}
+.data-row{display:flex;align-items:center;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border)}
+.data-row:last-child{border-bottom:none}
+.data-name{font-size:13px;color:var(--text2)}
+.data-val{font-family:var(--font-mono);font-size:13px;font-weight:500;color:var(--text)}
+.data-val.loading{color:var(--text3);font-weight:400;font-size:12px}
+.curve-tag{display:inline-block;font-size:10px;padding:2px 8px;border-radius:3px;font-family:var(--font-mono);margin-top:10px}
+.curve-tag.inverted{background:rgba(248,113,113,0.1);color:var(--red);border:1px solid rgba(248,113,113,0.2)}
+.curve-tag.normal{background:rgba(74,222,128,0.08);color:var(--green);border:1px solid rgba(74,222,128,0.15)}
+
+/* Yield chart */
+.curve-chart-wrap{position:relative;width:100%;height:130px;margin-top:12px}
+
+/* AI panel */
+.ai-panel{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:1.4rem;margin-bottom:1.5rem;position:relative;overflow:hidden}
+.ai-panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--amber),var(--teal),var(--amber));background-size:200%;animation:shimmer 3s linear infinite}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.ai-header{display:flex;align-items:center;gap:10px;margin-bottom:1rem}
+.ai-badge{font-size:9px;font-family:var(--font-mono);letter-spacing:0.1em;background:rgba(245,166,35,0.1);color:var(--amber);border:1px solid rgba(245,166,35,0.22);padding:3px 8px;border-radius:3px}
+.ai-title{font-size:13px;font-weight:500;color:var(--text)}
+.ai-body{font-size:14px;color:var(--text2);line-height:1.8;white-space:pre-wrap}
+.ai-loading-row{display:flex;align-items:center;gap:10px;color:var(--text3);font-size:13px;font-family:var(--font-mono)}
+.ai-dot{width:6px;height:6px;border-radius:50%;background:var(--amber);animation:blink 1.1s ease-in-out infinite}
+.ai-prompts{display:flex;gap:8px;flex-wrap:wrap;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--border)}
+.ai-prompt-btn{font-size:12px;font-family:var(--font-mono);padding:5px 12px;border-radius:3px;border:1px solid var(--border2);background:transparent;color:var(--text2);transition:all 0.15s}
+.ai-prompt-btn:hover{border-color:var(--amber);color:var(--amber)}
+
+/* Placeholder */
+.placeholder{text-align:center;padding:5rem 1rem;color:var(--text3)}
+.placeholder-icon{font-size:3rem;margin-bottom:1rem;opacity:0.4}
+.placeholder h3{font-family:var(--font-serif);font-size:1.6rem;color:var(--text2);margin-bottom:0.5rem}
+.placeholder p{font-size:14px;line-height:1.7;max-width:380px;margin:0 auto}
+
+/* Features */
+.features{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:4rem 2.5rem}
+.features-inner{max-width:1100px;margin:0 auto}
+.sec-head{margin-bottom:2rem}
+.sec-head h2{font-family:var(--font-serif);font-size:clamp(1.5rem,3vw,2rem);letter-spacing:-0.02em}
+.features-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:2rem}
+.feat{border-top:1px solid var(--border);padding-top:1.25rem}
+.feat-icon{font-size:1.5rem;margin-bottom:0.6rem}
+.feat-title{font-size:14px;font-weight:500;margin-bottom:0.35rem;color:var(--text)}
+.feat-desc{font-size:13px;color:var(--text2);line-height:1.65}
+
+/* Footer */
+footer{background:var(--bg2);border-top:1px solid var(--border);padding:2.5rem;text-align:center}
+.foot-logo{font-family:var(--font-serif);font-size:18px;color:var(--amber);margin-bottom:4px}
+.foot-sub{font-size:11px;color:var(--text3)}
+.foot-links{display:flex;gap:1.5rem;justify-content:center;margin-top:1rem;flex-wrap:wrap}
+.foot-links a{font-size:12px;color:var(--text3);transition:color 0.15s}
+.foot-links a:hover{color:var(--text2)}
+.foot-disc{font-size:11px;color:var(--text3);margin-top:1.5rem;max-width:580px;margin-left:auto;margin-right:auto;line-height:1.65}
+
+/* Reveal */
+.reveal{opacity:0;transform:translateY(14px);transition:opacity 0.45s ease,transform 0.45s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+
+@media(max-width:768px){
+  nav{padding:0 1.2rem}
+  .nav-link{display:none}
+  .hero{padding:3rem 1.2rem 2.5rem}
+  .section{padding:2.5rem 1.2rem}
+  .features{padding:2.5rem 1.2rem}
+  footer{padding:2rem 1.2rem}
+}
+</style>
+</head>
+<body>
+
+<!-- Ticker -->
+<div class="ticker-wrap" aria-hidden="true"><div class="ticker-track" id="ticker"></div></div>
+
+<!-- Nav -->
+<nav>
+  <div class="nav-logo">MacroLens<span>GLOBAL MACRO INTELLIGENCE</span></div>
+  <div class="nav-right">
+    <a href="#dashboard" class="nav-link">Dashboard</a>
+    <a href="#features" class="nav-link">Features</a>
+    <button class="nav-cta" onclick="document.getElementById('dashboard').scrollIntoView({behavior:'smooth'})">Open Dashboard</button>
+  </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-inner">
+    <div class="hero-eye">Real-time macro intelligence</div>
+    <h1>The world economy,<br><em>at a glance.</em></h1>
+    <p class="hero-sub">Track GDP, inflation, interest rates, bond yields, and FX for any country — powered by live data and AI analysis.</p>
+    <div class="hero-actions">
+      <button class="btn-primary" onclick="document.getElementById('dashboard').scrollIntoView({behavior:'smooth'})">Open Dashboard</button>
+      <button class="btn-ghost" onclick="document.getElementById('features').scrollIntoView({behavior:'smooth'})">How it works</button>
+    </div>
+    <div class="hero-kpis" id="hero-kpis">
+      <div class="hero-kpi"><div class="hkpi-val loading" id="hk-us-gdp">—</div><div class="hkpi-label">US GDP Growth</div><div class="hkpi-sub" id="hk-us-gdp-s">loading…</div></div>
+      <div class="hero-kpi"><div class="hkpi-val loading" id="hk-us-cpi">—</div><div class="hkpi-label">US Inflation</div><div class="hkpi-sub" id="hk-us-cpi-s">loading…</div></div>
+      <div class="hero-kpi"><div class="hkpi-val loading" id="hk-us-10y">—</div><div class="hkpi-label">US 10Y Yield</div><div class="hkpi-sub" id="hk-us-10y-s">loading…</div></div>
+      <div class="hero-kpi"><div class="hkpi-val loading" id="hk-cn-gdp">—</div><div class="hkpi-label">China GDP</div><div class="hkpi-sub" id="hk-cn-gdp-s">loading…</div></div>
+      <div class="hero-kpi"><div class="hkpi-val loading" id="hk-id-gdp">—</div><div class="hkpi-label">Indonesia GDP</div><div class="hkpi-sub" id="hk-id-gdp-s">loading…</div></div>
+    </div>
+  </div>
+</section>
+
+<hr class="div">
+
+<!-- Dashboard -->
+<div class="section" id="dashboard">
+  <div class="reveal" style="margin-bottom:0.75rem">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;flex-wrap:wrap;gap:0.5rem;margin-bottom:1.5rem">
+      <div>
+        <h2 style="font-family:var(--font-serif);font-size:clamp(1.5rem,3vw,2rem);letter-spacing:-0.02em">Live Dashboard</h2>
+        <p style="font-size:12px;color:var(--text3);font-family:var(--font-mono);margin-top:4px">Search any country to load its macro data</p>
+      </div>
+      <div style="font-family:var(--font-mono);font-size:11px;color:var(--text3)"><span class="live-dot"></span>Last fetch: <span id="fetch-time">—</span></div>
+    </div>
+
+    <!-- Country search -->
+    <div class="selector-wrap">
+      <span class="selector-label">Country</span>
+      <div class="country-search-wrap" id="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="country-input" placeholder="Search country…" autocomplete="off" aria-label="Search country">
+        <div class="country-dropdown" id="country-dropdown" role="listbox"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="source-bar reveal">
+    <p>Sources: <b>FRED (US macro)</b> · <b>US Treasury (yields)</b> · <b>Frankfurter (FX)</b> · <b>World Bank (global GDP/CPI)</b></p>
+    <p id="source-note" style="color:var(--text3)">Select a country to load data</p>
+  </div>
+
+  <div id="dashboard-body">
+    <div class="placeholder">
+      <div class="placeholder-icon">🌍</div>
+      <h3>Select a country</h3>
+      <p>Search for any country above to load its macro indicators, bond yields, FX rates, and AI analysis.</p>
+    </div>
+  </div>
+</div>
+
+<hr class="div">
+
+<!-- Features -->
+<section class="features" id="features">
+  <div class="features-inner">
+    <div class="sec-head reveal"><h2>Why MacroLens</h2></div>
+    <div class="features-grid">
+      <div class="feat reveal"><div class="feat-icon">📡</div><div class="feat-title">Live data feeds</div><div class="feat-desc">Pulls from FRED, US Treasury, Frankfurter, and World Bank APIs. Always the latest available figures.</div></div>
+      <div class="feat reveal"><div class="feat-icon">🤖</div><div class="feat-title">AI analysis</div><div class="feat-desc">Claude generates a concise macro brief for every country, synthesising all indicators into sharp insight.</div></div>
+      <div class="feat reveal"><div class="feat-icon">📈</div><div class="feat-title">Full yield curve</div><div class="feat-desc">1Y, 10Y, and 30Y bond yields with inversion alerts — the signal professionals watch most closely.</div></div>
+      <div class="feat reveal"><div class="feat-icon">💱</div><div class="feat-title">Real FX rates</div><div class="feat-desc">Daily ECB-sourced exchange rates via Frankfurter for 150+ currency pairs, no API key required.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="foot-logo">MacroLens</div>
+  <div class="foot-sub">Global Macro Intelligence</div>
+  <div class="foot-links">
+    <a href="https://fred.stlouisfed.org" target="_blank" rel="noopener">FRED</a>
+    <a href="https://home.treasury.gov" target="_blank" rel="noopener">US Treasury</a>
+    <a href="https://www.frankfurter.app" target="_blank" rel="noopener">Frankfurter</a>
+    <a href="https://data.worldbank.org" target="_blank" rel="noopener">World Bank</a>
+    <a href="https://www.anthropic.com" target="_blank" rel="noopener">Claude AI</a>
+  </div>
+  <p class="foot-disc">MacroLens uses public APIs for educational and informational purposes only. Data may be delayed or incomplete. This is not financial advice. Bond yield data for non-US countries uses curated reference values.</p>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+// ── Country list ────────────────────────────────────────────────────────────
+const COUNTRIES = [
+  { id:'US', name:'United States', flag:'🇺🇸', wbCode:'US', sub:'USD · Federal Reserve', rateLabel:'Fed Funds Rate', b1:null, b10:null, b30:null, rate:5.25, curveInverted:true,  fxPairs:['EUR/USD','GBP/USD','USD/JPY'], fxBases:['EUR','GBP','JPY'], fxQuotes:['USD','USD','USD'], tradeMode:'fred' },
+  { id:'CN', name:'China',         flag:'🇨🇳', wbCode:'CN', sub:'CNY · PBOC',            rateLabel:'1Y LPR',        b1:1.72, b10:2.29, b30:2.51, rate:3.45, curveInverted:false, fxPairs:['USD/CNY','EUR/CNY','GBP/CNY'], fxBases:['USD','EUR','GBP'], fxQuotes:['CNY','CNY','CNY'], tradeMode:'wb' },
+  { id:'ID', name:'Indonesia',     flag:'🇮🇩', wbCode:'ID', sub:'IDR · Bank Indonesia',  rateLabel:'BI7DRR',        b1:6.91, b10:6.82, b30:7.14, rate:6.25, curveInverted:false, fxPairs:['USD/IDR','EUR/IDR','GBP/IDR'], fxBases:['USD','EUR','GBP'], fxQuotes:['IDR','IDR','IDR'], tradeMode:'wb' },
+  { id:'EM', name:'Emerging Mkts', flag:'🌐',  wbCode:'ZJ', sub:'EM-8 Composite',         rateLabel:'Avg Rate',      b1:7.80, b10:7.20, b30:7.55, rate:8.1,  curveInverted:false, fxPairs:['USD/BRL','USD/INR','USD/MXN'], fxBases:['USD','USD','USD'], fxQuotes:['BRL','INR','MXN'], tradeMode:'wb' },
+  { id:'GB', name:'United Kingdom',flag:'🇬🇧', wbCode:'GB', sub:'GBP · Bank of England',  rateLabel:'Bank Rate',     b1:5.10, b10:4.25, b30:4.55, rate:5.25, curveInverted:false, fxPairs:['GBP/USD','EUR/GBP','GBP/JPY'], fxBases:['GBP','EUR','GBP'], fxQuotes:['USD','GBP','JPY'], tradeMode:'wb' },
+  { id:'EU', name:'Eurozone',      flag:'🇪🇺', wbCode:'XC', sub:'EUR · ECB',              rateLabel:'Deposit Rate',  b1:3.50, b10:2.55, b30:2.80, rate:4.00, curveInverted:false, fxPairs:['EUR/USD','EUR/GBP','EUR/JPY'], fxBases:['EUR','EUR','EUR'], fxQuotes:['USD','GBP','JPY'], tradeMode:'wb' },
+  { id:'JP', name:'Japan',         flag:'🇯🇵', wbCode:'JP', sub:'JPY · Bank of Japan',    rateLabel:'Policy Rate',   b1:0.10, b10:0.92, b30:1.78, rate:0.10, curveInverted:false, fxPairs:['USD/JPY','EUR/JPY','GBP/JPY'], fxBases:['USD','EUR','GBP'], fxQuotes:['JPY','JPY','JPY'], tradeMode:'wb' },
+  { id:'AU', name:'Australia',     flag:'🇦🇺', wbCode:'AU', sub:'AUD · Reserve Bank',     rateLabel:'Cash Rate',     b1:4.35, b10:4.45, b30:4.60, rate:4.35, curveInverted:false, fxPairs:['AUD/USD','EUR/AUD','GBP/AUD'], fxBases:['AUD','EUR','GBP'], fxQuotes:['USD','AUD','AUD'], tradeMode:'wb' },
+  { id:'CA', name:'Canada',        flag:'🇨🇦', wbCode:'CA', sub:'CAD · Bank of Canada',   rateLabel:'Overnight Rate',b1:4.75, b10:3.65, b30:3.40, rate:5.00, curveInverted:true,  fxPairs:['USD/CAD','EUR/CAD','GBP/CAD'], fxBases:['USD','EUR','GBP'], fxQuotes:['CAD','CAD','CAD'], tradeMode:'wb' },
+  { id:'IN', name:'India',         flag:'🇮🇳', wbCode:'IN', sub:'INR · Reserve Bank',     rateLabel:'Repo Rate',     b1:6.90, b10:7.10, b30:7.35, rate:6.50, curveInverted:false, fxPairs:['USD/INR','EUR/INR','GBP/INR'], fxBases:['USD','EUR','GBP'], fxQuotes:['INR','INR','INR'], tradeMode:'wb' },
+  { id:'BR', name:'Brazil',        flag:'🇧🇷', wbCode:'BR', sub:'BRL · Banco Central',    rateLabel:'Selic Rate',    b1:10.50,b10:12.80,b30:13.20,rate:10.50,curveInverted:false, fxPairs:['USD/BRL','EUR/BRL','GBP/BRL'], fxBases:['USD','EUR','GBP'], fxQuotes:['BRL','BRL','BRL'], tradeMode:'wb' },
+  { id:'KR', name:'South Korea',   flag:'🇰🇷', wbCode:'KR', sub:'KRW · Bank of Korea',   rateLabel:'Base Rate',     b1:3.50, b10:3.70, b30:3.85, rate:3.50, curveInverted:false, fxPairs:['USD/KRW','EUR/KRW','JPY/KRW'], fxBases:['USD','EUR','JPY'], fxQuotes:['KRW','KRW','KRW'], tradeMode:'wb' },
+  { id:'MX', name:'Mexico',        flag:'🇲🇽', wbCode:'MX', sub:'MXN · Banxico',          rateLabel:'Overnight Rate',b1:11.00,b10:9.50, b30:9.80, rate:11.00,curveInverted:false, fxPairs:['USD/MXN','EUR/MXN','GBP/MXN'], fxBases:['USD','EUR','GBP'], fxQuotes:['MXN','MXN','MXN'], tradeMode:'wb' },
+  { id:'ZA', name:'South Africa',  flag:'🇿🇦', wbCode:'ZA', sub:'ZAR · SARB',             rateLabel:'Repo Rate',     b1:8.10, b10:11.20,b30:12.50,rate:8.25, curveInverted:false, fxPairs:['USD/ZAR','EUR/ZAR','GBP/ZAR'], fxBases:['USD','EUR','GBP'], fxQuotes:['ZAR','ZAR','ZAR'], tradeMode:'wb' },
+  { id:'SG', name:'Singapore',     flag:'🇸🇬', wbCode:'SG', sub:'SGD · MAS',              rateLabel:'SGD NEER',      b1:3.60, b10:3.25, b30:3.45, rate:3.00, curveInverted:false, fxPairs:['USD/SGD','EUR/SGD','GBP/SGD'], fxBases:['USD','EUR','GBP'], fxQuotes:['SGD','SGD','SGD'], tradeMode:'wb' },
+];
+
+// ── FRED series for US ─────────────────────────────────────────────────────
+const FRED_KEY = 'YOUR_FRED_API_KEY'; // replace with key from fred.stlouisfed.org/docs/api/api_key.html
+
+
+// ── State ──────────────────────────────────────────────────────────────────
+let selectedCountry = null;
+let cachedData = {};
+let aiCache = {};
+let chartInstance = null;
+
+// ── World Bank fetch ───────────────────────────────────────────────────────
+async function fetchWB(code, indicator) {
+  try {
+    const r = await fetch(`https://api.worldbank.org/v2/country/${code}/indicator/${indicator}?format=json&mrv=2&per_page=2`, { signal: AbortSignal.timeout(7000) });
+    const j = await r.json();
+    const val = j?.[1]?.find(d => d.value != null)?.value;
+    return val != null ? +parseFloat(val).toFixed(2) : null;
+  } catch { return null; }
+}
+
+// ── FRED fetch — returns { value, prev, date } for delta calculation ────────
+async function fetchFRED(series, limit = 2) {
+  try {
+    const r = await fetch(`https://api.stlouisfed.org/fred/series/observations?series_id=${series}&api_key=${FRED_KEY}&file_type=json&sort_order=desc&limit=${limit}`, { signal: AbortSignal.timeout(7000) });
+    const j = await r.json();
+    const obs = (j?.observations || []).filter(o => o.value && o.value !== '.');
+    if (!obs.length) return null;
+    return {
+      value: +parseFloat(obs[0].value).toFixed(3),
+      prev:  obs[1] ? +parseFloat(obs[1].value).toFixed(3) : null,
+      date:  obs[0].date
+    };
+  } catch { return null; }
+}
+
+// ── Compute YoY CPI from monthly index levels (CPIAUCSL) ────────────────────
+async function fetchFREDCPI() {
+  try {
+    // Get 13 months: latest + 12 months ago for true YoY %
+    const r = await fetch(`https://api.stlouisfed.org/fred/series/observations?series_id=CPIAUCSL&api_key=${FRED_KEY}&file_type=json&sort_order=desc&limit=13`, { signal: AbortSignal.timeout(7000) });
+    const j = await r.json();
+    const obs = (j?.observations || []).filter(o => o.value && o.value !== '.');
+    if (obs.length < 2) return null;
+    const latest = +obs[0].value;
+    const prev   = +obs[1].value;                   // 1 month ago → MoM
+    const year   = obs.length >= 13 ? +obs[12].value : null; // 12 months ago → YoY
+    return {
+      value: year ? +((latest - year) / year * 100).toFixed(2) : +((latest - prev) / prev * 100 * 12).toFixed(2),
+      mom:   +((latest - prev) / prev * 100).toFixed(3),
+      date:  obs[0].date,
+      label: year ? 'YoY' : 'ann.'
+    };
+  } catch { return null; }
+}
+
+// ── Quarterly GDP growth from FRED (A191RL1Q225SBEA = real GDP QoQ ann.) ────
+async function fetchFREDGDP() {
+  try {
+    const r = await fetch(`https://api.stlouisfed.org/fred/series/observations?series_id=A191RL1Q225SBEA&api_key=${FRED_KEY}&file_type=json&sort_order=desc&limit=2`, { signal: AbortSignal.timeout(7000) });
+    const j = await r.json();
+    const obs = (j?.observations || []).filter(o => o.value && o.value !== '.');
+    if (!obs.length) return null;
+    return {
+      value: +parseFloat(obs[0].value).toFixed(2),
+      prev:  obs[1] ? +parseFloat(obs[1].value).toFixed(2) : null,
+      date:  obs[0].date   // e.g. "2024-10-01" = Q4 2024
+    };
+  } catch { return null; }
+}
+
+// ── US Treasury yield fetch ────────────────────────────────────────────────
+async function fetchTreasury() {
+  try {
+    const r = await fetch('https://home.treasury.gov/resource-center/data-chart-center/interest-rates/pages/xml?data=daily_treasury_yield_curve&field_tdr_date_value=202506', { signal: AbortSignal.timeout(8000) });
+    const text = await r.text();
+    const parser = new DOMParser();
+    const xml = parser.parseFromString(text, 'text/xml');
+    const entries = xml.querySelectorAll('entry');
+    if (!entries.length) return null;
+    const last = entries[entries.length - 1];
+    const get = tag => { const el = last.querySelector(tag); return el ? +parseFloat(el.textContent).toFixed(2) : null; };
+    return { y1: get('d_1_YR'), y10: get('d_10_YR'), y30: get('d_30_YR') };
+  } catch { return null; }
+}
+
+// ── Frankfurter FX fetch ───────────────────────────────────────────────────
+async function fetchFX(bases, quotes) {
+  const results = [];
+  const uniqueBases = [...new Set(bases)];
+  const rateMap = {};
+  await Promise.allSettled(uniqueBases.map(async base => {
+    try {
+      const r = await fetch(`https://api.frankfurter.app/latest?from=${base}`, { signal: AbortSignal.timeout(7000) });
+      const j = await r.json();
+      rateMap[base] = j.rates || {};
+    } catch { rateMap[base] = {}; }
+  }));
+  for (let i = 0; i < bases.length; i++) {
+    const base = bases[i], quote = quotes[i];
+    const rate = rateMap[base]?.[quote];
+    results.push(rate != null ? +rate.toFixed(4) : null);
+  }
+  return results;
+}
+
+// ── Load country data ──────────────────────────────────────────────────────
+async function loadCountryData(country) {
+  if (cachedData[country.id]) return cachedData[country.id];
+  const isUS = country.id === 'US';
+
+  // Fetch in parallel — US gets FRED quarterly GDP + monthly CPI, rest get World Bank annual
+  const [wbGDP, wbCPI, wbUnemp, fxRates] = await Promise.all([
+    fetchWB(country.wbCode, 'NY.GDP.MKTP.KD.ZG'),
+    fetchWB(country.wbCode, 'FP.CPI.TOTL.ZG'),
+    fetchWB(country.wbCode, 'SL.UEM.TOTL.ZS'),
+    fetchFX(country.fxBases, country.fxQuotes)
+  ]);
+
+  let gdpVal = wbGDP, gdpDelta = null, gdpFreq = 'annual · World Bank', gdpDate = '';
+  let cpiVal = wbCPI, cpiMoM = null, cpiFreq = 'annual · World Bank', cpiDate = '';
+  let unempVal = wbUnemp, unempDelta = null, unempFreq = 'annual · World Bank';
+
+  if (isUS) {
+    // Quarterly GDP
+    const fredGDP = await fetchFREDGDP();
+    if (fredGDP) {
+      gdpVal   = fredGDP.value;
+      gdpDelta = fredGDP.prev != null ? +(fredGDP.value - fredGDP.prev).toFixed(2) : null;
+      gdpFreq  = 'QoQ ann. · FRED';
+      gdpDate  = fredGDP.date ? formatQuarter(fredGDP.date) : '';
+    }
+    // Monthly CPI
+    const fredCPI = await fetchFREDCPI();
+    if (fredCPI) {
+      cpiVal  = fredCPI.value;
+      cpiMoM  = fredCPI.mom;
+      cpiFreq = `${fredCPI.label} · FRED`;
+      cpiDate = fredCPI.date ? formatMonth(fredCPI.date) : '';
+    }
+    // Monthly unemployment
+    const fredUnemp = await fetchFRED('UNRATE', 2);
+    if (fredUnemp) {
+      unempVal   = fredUnemp.value;
+      unempDelta = fredUnemp.prev != null ? +(fredUnemp.value - fredUnemp.prev).toFixed(1) : null;
+      unempFreq  = 'monthly · FRED';
+    }
+  }
+
+  let b1 = country.b1, b10 = country.b10, b30 = country.b30;
+  if (isUS) {
+    const tsy = await fetchTreasury();
+    if (tsy) { b1 = tsy.y1 ?? b1; b10 = tsy.y10 ?? b10; b30 = tsy.y30 ?? b30; }
+  }
+
+  const data = {
+    gdp: gdpVal ?? '—', gdpDelta, gdpFreq, gdpDate,
+    cpi: cpiVal ?? '—', cpiMoM,  cpiFreq, cpiDate,
+    unemployment: unempVal ?? '—', unempDelta, unempFreq,
+    rate: country.rate,
+    b1, b10, b30,
+    curveInverted: b1 && b10 ? b1 > b10 : country.curveInverted,
+    fx: country.fxPairs.map((pair, i) => ({
+      pair,
+      rate: fxRates[i] != null ? formatFX(pair, fxRates[i]) : '—',
+      live: fxRates[i] != null
+    })),
+    sources: {
+      gdp:    gdpVal  ? (isUS ? 'FRED quarterly' : 'World Bank annual') : 'fallback',
+      cpi:    cpiVal  ? (isUS ? 'FRED monthly'   : 'World Bank annual') : 'fallback',
+      yields: isUS ? 'US Treasury daily' : 'reference',
+      fx:     fxRates.some(r=>r!=null) ? 'Frankfurter daily' : 'fallback'
+    }
+  };
+  cachedData[country.id] = data;
+  return data;
+}
+
+// ── Date helpers ───────────────────────────────────────────────────────────
+function formatQuarter(dateStr) {
+  const d = new Date(dateStr);
+  const q = Math.floor(d.getMonth() / 3) + 1;
+  return `Q${q} ${d.getFullYear()}`;
+}
+function formatMonth(dateStr) {
+  const d = new Date(dateStr);
+  return d.toLocaleDateString('en-US', { month:'short', year:'numeric' });
+}
+
+function formatFX(pair, rate) {
+  if (rate > 100) return rate.toFixed(0);
+  if (rate > 10) return rate.toFixed(2);
+  return rate.toFixed(4);
+}
+
+// ── Ticker ─────────────────────────────────────────────────────────────────
+function buildTicker() {
+  const items = [
+    { n:'US GDP', v:'2.8%', d:true }, { n:'US CPI', v:'3.1%', d:false }, { n:'US 10Y', v:'4.42%', d:false },
+    { n:'US 1Y', v:'5.18%', d:false }, { n:'Fed Rate', v:'5.25%', d:false }, { n:'CN GDP', v:'5.2%', d:true },
+    { n:'ID GDP', v:'5.1%', d:true }, { n:'EUR/USD', v:'1.0840', d:false }, { n:'USD/CNY', v:'7.241', d:false },
+    { n:'USD/IDR', v:'15,890', d:false }, { n:'DXY', v:'104.3', d:false }, { n:'USD/JPY', v:'156.2', d:false },
+    { n:'GBP/USD', v:'1.268', d:true }, { n:'EM GDP', v:'4.1%', d:true }, { n:'EM CPI', v:'5.8%', d:false },
+  ];
+  const html = items.map(i=>`<div class="ticker-item"><span class="ticker-name">${i.n}</span><span class="ticker-val">${i.v}</span></div>`).join('');
+  document.getElementById('ticker').innerHTML = html + html;
+}
+
+// ── Hero KPIs ──────────────────────────────────────────────────────────────
+async function loadHeroKPIs() {
+  const [wbCnGDP, wbIdGDP, fredGDP, fredCPI, tsy] = await Promise.all([
+    fetchWB('CN','NY.GDP.MKTP.KD.ZG'),
+    fetchWB('ID','NY.GDP.MKTP.KD.ZG'),
+    fetchFREDGDP(),
+    fetchFREDCPI(),
+    fetchTreasury()
+  ]);
+  const set = (id, val, cls, sub) => {
+    const el = document.getElementById(id); if (!el) return;
+    el.textContent = val; el.className = `hkpi-val ${cls}`;
+    const s = document.getElementById(id+'-s'); if (s) s.textContent = sub;
+  };
+  const usGDP = fredGDP?.value;
+  const usGDPDate = fredGDP ? formatQuarter(fredGDP.date) : '';
+  set('hk-us-gdp', usGDP != null ? `${usGDP}%` : '2.8%', usGDP > 2 ? 'up' : 'dn', `QoQ ann. · FRED${usGDPDate ? ' · '+usGDPDate : ''}`);
+  const usCPI = fredCPI?.value;
+  const usCPIDate = fredCPI ? formatMonth(fredCPI.date) : '';
+  set('hk-us-cpi', usCPI != null ? `${usCPI}%` : '3.1%', usCPI > 3 ? 'dn' : 'up', `YoY · FRED${usCPIDate ? ' · '+usCPIDate : ''}`);
+  set('hk-us-10y', tsy?.y10 ? `${tsy.y10}%` : '4.42%', '', 'US Treasury · daily');
+  set('hk-cn-gdp', wbCnGDP ? `${wbCnGDP}%` : '5.2%', wbCnGDP > 4 ? 'up' : 'dn', 'annual · World Bank');
+  set('hk-id-gdp', wbIdGDP ? `${wbIdGDP}%` : '5.1%', 'up', 'annual · World Bank');
+  document.getElementById('fetch-time').textContent = new Date().toLocaleTimeString();
+}
+
+// ── Yield curve chart ──────────────────────────────────────────────────────
+function drawCurve(canvasId, b1, b10, b30, inverted) {
+  if (chartInstance) { chartInstance.destroy(); chartInstance = null; }
+  const canvas = document.getElementById(canvasId);
+  if (!canvas || !b1 || !b10 || !b30) return;
+  const col = inverted ? '#f87171' : '#2dd4bf';
+  chartInstance = new Chart(canvas, {
+    type: 'line',
+    data: { labels:['1Y','10Y','30Y'], datasets:[{ data:[b1,b10,b30], borderColor:col, backgroundColor:col+'1a', fill:true, tension:0.35, pointRadius:4, pointBackgroundColor:col, borderWidth:2 }] },
+    options: { responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false}, tooltip:{ callbacks:{ label: ctx=>`${ctx.parsed.y.toFixed(2)}%` } } },
+      scales:{
+        x:{ grid:{color:'#2a2a32'}, ticks:{color:'#5a5a65',font:{family:'IBM Plex Mono',size:11}} },
+        y:{ grid:{color:'#2a2a32'}, ticks:{color:'#5a5a65',font:{family:'IBM Plex Mono',size:11},callback:v=>v.toFixed(1)+'%'}, beginAtZero:false }
+      }
+    }
+  });
+}
+
+// ── AI analysis ────────────────────────────────────────────────────────────
+async function fetchAI(countryId, country, data) {
+  if (aiCache[countryId]) {
+    document.getElementById('ai-loading').style.display = 'none';
+    document.getElementById('ai-text').style.display = 'block';
+    document.getElementById('ai-text').textContent = aiCache[countryId];
+    document.getElementById('ai-prompts').style.display = 'flex';
+    return;
+  }
+  const prompt = `You are a professional macro economist writing for a financial terminal. Write a sharp 3-paragraph macro analysis of ${country.name} — no headers, no bullets, plain prose.
+
+Data:
+- GDP Growth: ${data.gdp}%
+- CPI Inflation: ${data.cpi}%
+- Unemployment: ${data.unemployment}%
+- Policy Rate (${country.rateLabel}): ${data.rate}%
+- Yields: 1Y ${data.b1}%, 10Y ${data.b10}%, 30Y ${data.b30}% — ${data.curveInverted ? 'INVERTED (1Y > 10Y)' : 'normal/steep curve'}
+- FX: ${data.fx.map(f=>`${f.pair} ${f.rate}`).join(', ')}
+
+Para 1: Overall macro health — what the data signals.
+Para 2: Key risks or opportunities in the next 6–12 months.
+Para 3: Bond market & yield curve — what the shape implies for growth and monetary policy.
+Under 210 words. No preamble.`;
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({ model:'claude-sonnet-4-20250514', max_tokens:1000, messages:[{role:'user',content:prompt}] })
+    });
+    const j = await res.json();
+    const text = j.content?.map(b=>b.text||'').join('') || 'Analysis unavailable.';
+    aiCache[countryId] = text;
+    document.getElementById('ai-loading').style.display = 'none';
+    document.getElementById('ai-text').style.display = 'block';
+    document.getElementById('ai-text').textContent = text;
+    document.getElementById('ai-prompts').style.display = 'flex';
+  } catch {
+    const el = document.getElementById('ai-loading');
+    if (el) el.textContent = '⚠ Analysis unavailable.';
+  }
+}
+
+// ── Render dashboard ───────────────────────────────────────────────────────
+async function renderCountry(country) {
+  selectedCountry = country;
+  const body = document.getElementById('dashboard-body');
+  body.innerHTML = `<div style="padding:3rem;text-align:center;color:var(--text3);font-family:var(--font-mono);font-size:13px"><span class="live-dot"></span> Loading data for ${country.flag} ${country.name}…</div>`;
+
+  let data;
+  try { data = await loadCountryData(country); }
+  catch { data = { gdp:'—',cpi:'—',unemployment:'—',rate:country.rate,b1:country.b1,b10:country.b10,b30:country.b30,curveInverted:country.curveInverted,fx:country.fxPairs.map(p=>({pair:p,rate:'—',live:false})),sources:{} }; }
+
+  const srcNote = `GDP: ${data.sources.gdp||'ref'} · CPI: ${data.sources.cpi||'ref'} · Yields: ${data.sources.yields||'ref'} · FX: ${data.sources.fx||'ref'}`;
+  document.getElementById('source-note').textContent = srcNote;
+  document.getElementById('fetch-time').textContent = new Date().toLocaleTimeString();
+
+  const canvasId = 'yield-curve-canvas';
+  // delta helpers
+  const dSign = v => v > 0 ? `▲ +${v}` : v < 0 ? `▼ ${v}` : `— ${v}`;
+  const dCls  = (v, higherIsBad) => v === null ? '' : (higherIsBad ? (v > 0 ? 'dn' : 'up') : (v > 0 ? 'up' : 'dn'));
+  body.innerHTML = `
+    <div class="metrics-row reveal">
+      <div class="metric-card">
+        <div class="metric-label">GDP Growth${data.gdpDate ? ` · ${data.gdpDate}` : ''}</div>
+        <div class="metric-val ${data.gdp !== '—' && data.gdp > 2 ? 'up' : data.gdp !== '—' && data.gdp < 0 ? 'dn' : ''}">${data.gdp !== '—' ? data.gdp+'%' : '—'}</div>
+        <div class="metric-delta ${data.gdpDelta !== null ? dCls(data.gdpDelta, false) : ''}">${data.gdpDelta !== null ? dSign(data.gdpDelta)+'pp vs prev' : data.gdpFreq}</div>
+        ${data.gdpDelta !== null ? `<div class="metric-delta" style="margin-top:1px;opacity:0.6">${data.gdpFreq}</div>` : ''}
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Inflation (CPI)${data.cpiDate ? ` · ${data.cpiDate}` : ''}</div>
+        <div class="metric-val ${data.cpi !== '—' && data.cpi > 4 ? 'dn' : data.cpi !== '—' && data.cpi < 2 ? 'up' : ''}">${data.cpi !== '—' ? data.cpi+'%' : '—'}</div>
+        <div class="metric-delta ${data.cpiMoM !== null ? dCls(data.cpiMoM, true) : ''}">${data.cpiMoM !== null ? dSign(data.cpiMoM)+'% MoM' : data.cpiFreq}</div>
+        ${data.cpiMoM !== null ? `<div class="metric-delta" style="margin-top:1px;opacity:0.6">${data.cpiFreq}</div>` : ''}
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Unemployment</div>
+        <div class="metric-val">${data.unemployment !== '—' ? data.unemployment+'%' : '—'}</div>
+        <div class="metric-delta ${data.unempDelta !== null ? dCls(data.unempDelta, true) : ''}">${data.unempDelta !== null ? dSign(data.unempDelta)+'pp MoM' : data.unempFreq}</div>
+        ${data.unempDelta !== null ? `<div class="metric-delta" style="margin-top:1px;opacity:0.6">${data.unempFreq}</div>` : ''}
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">${country.rateLabel}</div>
+        <div class="metric-val">${data.rate}%</div>
+        <div class="metric-delta">current policy rate</div>
+      </div>
+    </div>
+
+    <div class="cards-grid reveal">
+      <div class="card">
+        <div class="card-head">Bond Yields · ${country.id==='US'?'US Treasury':'Reference'}</div>
+        <div class="data-row"><span class="data-name">1-Year</span><span class="data-val">${data.b1 ? data.b1+'%' : '—'}</span></div>
+        <div class="data-row"><span class="data-name">10-Year</span><span class="data-val">${data.b10 ? data.b10+'%' : '—'}</span></div>
+        <div class="data-row"><span class="data-name">30-Year</span><span class="data-val">${data.b30 ? data.b30+'%' : '—'}</span></div>
+        <div class="curve-tag ${data.curveInverted?'inverted':'normal'}">${data.curveInverted?'⚠ INVERTED CURVE':'✓ NORMAL CURVE'}</div>
+        <div class="curve-chart-wrap"><canvas id="${canvasId}" role="img" aria-label="Yield curve: 1Y ${data.b1}%, 10Y ${data.b10}%, 30Y ${data.b30}%"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-head">FX Rates · Frankfurter / ECB</div>
+        ${data.fx.map(f=>`<div class="data-row">
+          <span class="data-name">${f.pair}</span>
+          <span class="data-val ${f.live ? '' : 'loading'}">${f.rate}${f.live ? '' : ' ·ref'}</span>
+        </div>`).join('')}
+        <div class="card-head" style="margin-top:1.25rem">Trade & External</div>
+        <div class="data-row"><span class="data-name">Data availability</span><span class="data-val loading" style="font-size:11px">World Bank annual</span></div>
+      </div>
+    </div>
+
+    <div class="ai-panel reveal">
+      <div class="ai-header">
+        <div class="ai-badge">AI ANALYSIS</div>
+        <div class="ai-title">${country.flag} ${country.name} — Macro Brief</div>
+      </div>
+      <div class="ai-loading-row" id="ai-loading"><div class="ai-dot"></div> Generating analysis via Claude…</div>
+      <div class="ai-body" id="ai-text" style="display:none"></div>
+      <div class="ai-prompts" id="ai-prompts" style="display:none">
+        <button class="ai-prompt-btn" onclick="handlePrompt('Deep dive on ${country.name} inflation dynamics and central bank outlook')">Inflation deep dive →</button>
+        <button class="ai-prompt-btn" onclick="handlePrompt('Key macro risks for ${country.name} in the next 6–12 months')">6-month risks →</button>
+        <button class="ai-prompt-btn" onclick="handlePrompt('What does the ${country.name} yield curve signal about recession risk?')">Yield curve signal →</button>
+      </div>
+    </div>
+  `;
+
+  setTimeout(() => { drawCurve(canvasId, data.b1, data.b10, data.b30, data.curveInverted); revealAll(); }, 40);
+  fetchAI(country.id, country, data);
+}
+
+function handlePrompt(msg) {
+  if (typeof sendPrompt === 'function') sendPrompt(msg);
+  else alert('Open MacroLens inside Claude.ai to use AI prompts, or integrate the Anthropic API directly.');
+}
+
+// ── Country search / dropdown ──────────────────────────────────────────────
+const input = document.getElementById('country-input');
+const dropdown = document.getElementById('country-dropdown');
+let highlighted = -1;
+
+function renderDropdown(query) {
+  const q = query.toLowerCase().trim();
+  const matches = q ? COUNTRIES.filter(c => c.name.toLowerCase().includes(q) || c.id.toLowerCase().includes(q)) : COUNTRIES;
+  if (!matches.length) {
+    dropdown.innerHTML = `<div class="dd-empty">No countries found</div>`;
+    dropdown.classList.add('open'); return;
+  }
+  dropdown.innerHTML = matches.map((c,i) =>
+    `<div class="dd-item" data-id="${c.id}" role="option" tabindex="-1">
+      <span class="dd-flag">${c.flag}</span>
+      <span class="dd-name">${c.name}</span>
+      <span class="dd-sub">${c.sub}</span>
+    </div>`
+  ).join('');
+  dropdown.classList.add('open');
+  highlighted = -1;
+  dropdown.querySelectorAll('.dd-item').forEach(item => {
+    item.addEventListener('mousedown', e => { e.preventDefault(); selectCountry(item.dataset.id); });
+  });
+}
+
+function selectCountry(id) {
+  const country = COUNTRIES.find(c => c.id === id);
+  if (!country) return;
+  input.value = country.name;
+  input.dataset.selected = id;
+  dropdown.classList.remove('open');
+  renderCountry(country);
+}
+
+function closeDropdown() { dropdown.classList.remove('open'); highlighted = -1; }
+
+input.addEventListener('input', () => renderDropdown(input.value));
+input.addEventListener('focus', () => renderDropdown(input.value));
+input.addEventListener('blur', () => setTimeout(closeDropdown, 150));
+input.addEventListener('keydown', e => {
+  const items = dropdown.querySelectorAll('.dd-item');
+  if (!items.length) return;
+  if (e.key === 'ArrowDown') { e.preventDefault(); highlighted = Math.min(highlighted+1, items.length-1); items.forEach((el,i)=>el.classList.toggle('highlighted',i===highlighted)); }
+  else if (e.key === 'ArrowUp') { e.preventDefault(); highlighted = Math.max(highlighted-1, 0); items.forEach((el,i)=>el.classList.toggle('highlighted',i===highlighted)); }
+  else if (e.key === 'Enter' && highlighted >= 0) { e.preventDefault(); selectCountry(items[highlighted].dataset.id); }
+  else if (e.key === 'Escape') closeDropdown();
+});
+
+document.addEventListener('click', e => { if (!document.getElementById('search-wrap').contains(e.target)) closeDropdown(); });
+
+// ── Scroll reveal ──────────────────────────────────────────────────────────
+function revealAll() {
+  const obs = new IntersectionObserver(entries => entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); } }), { threshold:0.06 });
+  document.querySelectorAll('.reveal:not(.visible)').forEach(el => obs.observe(el));
+}
+
+// ── Init ───────────────────────────────────────────────────────────────────
+buildTicker();
+revealAll();
+loadHeroKPIs();
+
+// Auto-load USA on start
+setTimeout(() => { selectCountry('US'); }, 300);
+</script>
+</body>
+</html>
